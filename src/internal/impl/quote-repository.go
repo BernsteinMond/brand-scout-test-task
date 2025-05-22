@@ -49,11 +49,13 @@ func (q *QuoteRepository) DeleteQuoteByID(ctx context.Context, id uuid.UUID) err
 func (q *QuoteRepository) GetQuotesWithFilter(ctx context.Context, authorFilter string) (_ []service.Quote, err error) {
 	var query = `SELECT id, author, quote FROM quote.quotes`
 
+	args := make([]interface{}, 0)
 	if authorFilter != "" {
 		query += " WHERE author = $1"
+		args = append(args, authorFilter)
 	}
 
-	rows, err := q.db.QueryContext(ctx, query)
+	rows, err := q.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("run sql query: %w", err)
 	}

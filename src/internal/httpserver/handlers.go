@@ -63,7 +63,7 @@ func getQuotesHandler(service QuoteService) http.HandlerFunc {
 
 		quotes, err := service.GetQuotesWithFilter(r.Context(), authorFilter)
 		if err != nil {
-			http.Error(w, "service: get quotes", http.StatusInternalServerError)
+			http.Error(w, "service: get quotes: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -77,7 +77,7 @@ func getQuotesHandler(service QuoteService) http.HandlerFunc {
 
 		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
-			http.Error(w, "failed to encode response", http.StatusInternalServerError)
+			http.Error(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
@@ -88,7 +88,7 @@ func getRandomQuoteHandler(service QuoteService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		quote, err := service.GetRandomQuote(r.Context())
 		if err != nil {
-			http.Error(w, "service: get random quote", http.StatusInternalServerError)
+			http.Error(w, "service: get random quote: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -97,7 +97,7 @@ func getRandomQuoteHandler(service QuoteService) http.HandlerFunc {
 
 		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
-			http.Error(w, "failed to encode response", http.StatusInternalServerError)
+			http.Error(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 		}
 
 		return
@@ -120,7 +120,7 @@ func deleteQuoteHandler(service QuoteService) http.HandlerFunc {
 
 		err = service.DeleteQuoteByID(r.Context(), id)
 		if err != nil {
-			http.Error(w, "service: delete quote by id", http.StatusInternalServerError)
+			http.Error(w, "service: delete quote by id: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
