@@ -5,9 +5,7 @@ import (
 	"net/http"
 )
 
-func New(service QuoteService, listenAddr string) *http.Server {
-	router := mux.NewRouter()
-
+func New(service QuoteService, router *mux.Router, listenAddr string) *http.Server {
 	server := &http.Server{
 		Addr:    ":" + listenAddr,
 		Handler: router,

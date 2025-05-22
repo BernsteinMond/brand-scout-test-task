@@ -9,6 +9,7 @@ import (
 	"github.com/BernsteinMond/brand-scout-test-task/src/internal/impl"
 	"github.com/BernsteinMond/brand-scout-test-task/src/internal/service"
 	"github.com/BernsteinMond/brand-scout-test-task/src/pkg/database"
+	"github.com/gorilla/mux"
 	"log/slog"
 	"net/http"
 	"os"
@@ -62,7 +63,8 @@ func run() (err error) {
 	quoteRepo := impl.NewQuoteRepository(db)
 	quoteService := service.New(quoteRepo)
 
-	server := httpserver.New(quoteService, cfg.HTTPServer.ListenAddr)
+	router := mux.NewRouter()
+	server := httpserver.New(quoteService, router, cfg.HTTPServer.ListenAddr)
 	stopWg := sync.WaitGroup{}
 
 	stopWg.Add(1)

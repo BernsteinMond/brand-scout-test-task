@@ -12,10 +12,10 @@ import (
 
 func mapHandlers(router *mux.Router, service QuoteService) {
 	quotesGroup := router.PathPrefix("/quotes").Subrouter()
-	quotesGroup.Handle("", postQuoteHandler(service)).Methods("POST")
-	quotesGroup.Handle("", getQuotesHandler(service)).Methods("GET")
-	quotesGroup.Handle("/random", getRandomQuoteHandler(service)).Methods("GET")
-	quotesGroup.Handle("/{id}", deleteQuoteHandler(service)).Methods("DELETE")
+	quotesGroup.Handle("", PostQuoteHandler(service)).Methods("POST")
+	quotesGroup.Handle("", GetQuotesHandler(service)).Methods("GET")
+	quotesGroup.Handle("/random", GetRandomQuoteHandler(service)).Methods("GET")
+	quotesGroup.Handle("/{id}", DeleteQuoteHandler(service)).Methods("DELETE")
 }
 
 type QuoteService interface {
@@ -25,7 +25,7 @@ type QuoteService interface {
 	DeleteQuoteByID(ctx context.Context, id uuid.UUID) error
 }
 
-func postQuoteHandler(service QuoteService) http.HandlerFunc {
+func PostQuoteHandler(service QuoteService) http.HandlerFunc {
 	type request = quoteCreateDTO
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req request
@@ -57,7 +57,7 @@ func postQuoteHandler(service QuoteService) http.HandlerFunc {
 	}
 }
 
-func getQuotesHandler(service QuoteService) http.HandlerFunc {
+func GetQuotesHandler(service QuoteService) http.HandlerFunc {
 	type response struct {
 		Quotes []quoteReadDTO `json:"quotes"`
 	}
@@ -86,7 +86,7 @@ func getQuotesHandler(service QuoteService) http.HandlerFunc {
 	}
 }
 
-func getRandomQuoteHandler(service QuoteService) http.HandlerFunc {
+func GetRandomQuoteHandler(service QuoteService) http.HandlerFunc {
 	type response = quoteReadDTO
 	return func(w http.ResponseWriter, r *http.Request) {
 		quote, err := service.GetRandomQuote(r.Context())
@@ -103,11 +103,12 @@ func getRandomQuoteHandler(service QuoteService) http.HandlerFunc {
 			http.Error(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
 		}
 
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 }
 
-func deleteQuoteHandler(service QuoteService) http.HandlerFunc {
+func DeleteQuoteHandler(service QuoteService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr, ok := mux.Vars(r)["id"]
 		if !ok {
