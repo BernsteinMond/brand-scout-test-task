@@ -54,10 +54,7 @@ func run() (err error) {
 	}()
 
 	quoteRepo := impl.NewQuoteRepository(db)
-
-	quoteService := service.Service{
-		QuoteRepository: quoteRepo,
-	}
+	quoteService := service.New(quoteRepo)
 
 	server := httpserver.New(quoteService, cfg.HTTPServer.ListenAddr)
 	stopWg := sync.WaitGroup{}

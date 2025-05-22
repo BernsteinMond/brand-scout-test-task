@@ -91,3 +91,9 @@ func (s *Service) GetQuoteByAuthor(ctx context.Context, author string) (*Quote, 
 
 	return quote, nil
 }
+
+func New(quoteRepo QuoteRepository) *Service {
+	return &Service{
+		QuoteRepository: quoteRepo,
+	}
+}
