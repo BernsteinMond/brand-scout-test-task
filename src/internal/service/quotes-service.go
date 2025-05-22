@@ -19,7 +19,7 @@ type QuoteRepository interface {
 	// CreateNewQuote must return ErrRepoAlreadyExists if the quote already exists.
 	CreateNewQuote(ctx context.Context, quote *Quote) error
 	DeleteQuoteByID(ctx context.Context, id uuid.UUID) error
-	GetQuotes(ctx context.Context) ([]Quote, error)
+	GetQuotesWithFilter(ctx context.Context, authorFilter string) ([]Quote, error)
 	GetRandomQuote(ctx context.Context) (*Quote, error)
 	// GetQuoteByAuthor must return ErrNotFound if no quote was found.
 	GetQuoteByAuthor(ctx context.Context, author string) (*Quote, error)
@@ -62,10 +62,10 @@ func (s *Service) DeleteQuoteByID(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (s *Service) GetQuotes(ctx context.Context) ([]Quote, error) {
-	quotes, err := s.QuoteRepository.GetQuotes(ctx)
+func (s *Service) GetQuotesWithFilter(ctx context.Context, authorFilter string) ([]Quote, error) {
+	quotes, err := s.QuoteRepository.GetQuotesWithFilter(ctx, authorFilter)
 	if err != nil {
-		return nil, fmt.Errorf("quote repository: get quotes: %w", err)
+		return nil, fmt.Errorf("quote repository: get quotes with filter: %w", err)
 	}
 
 	return quotes, nil
@@ -83,6 +83,9 @@ func (s *Service) GetRandomQuote(ctx context.Context) (*Quote, error) {
 func (s *Service) GetQuoteByAuthor(ctx context.Context, author string) (*Quote, error) {
 	quote, err := s.QuoteRepository.GetQuoteByAuthor(ctx, author)
 	if err != nil {
+		if errors.Is(err, ErrNotFound) {
+			return nil, ErrNotFound
+		}
 		return nil, fmt.Errorf("quote repository: get quote by author: %w", err)
 	}
 

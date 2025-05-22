@@ -46,8 +46,12 @@ func (q *QuoteRepository) DeleteQuoteByID(ctx context.Context, id uuid.UUID) err
 	return nil
 }
 
-func (q *QuoteRepository) GetQuotes(ctx context.Context) (_ []service.Quote, err error) {
-	const query = `SELECT id, author, quote FROM quote.quotes`
+func (q *QuoteRepository) GetQuotesWithFilter(ctx context.Context, authorFilter string) (_ []service.Quote, err error) {
+	var query = `SELECT id, author, quote FROM quote.quotes`
+
+	if authorFilter != "" {
+		query += " WHERE author = $1"
+	}
 
 	rows, err := q.db.QueryContext(ctx, query)
 	if err != nil {

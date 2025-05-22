@@ -12,9 +12,8 @@ import (
 func mapHandlers(router *mux.Router, service quoteService.Service) {
 	quotesGroup := router.PathPrefix("/quotes").Subrouter()
 	quotesGroup.Handle("", postQuoteHandler(service)).Methods("POST")
-	quotesGroup.Handle("", getAllQuotesHandler(service)).Methods("GET")
+	quotesGroup.Handle("", getQuotesHandler(service)).Methods("GET")
 	quotesGroup.Handle("/random", getRandomQuoteHandler(service)).Methods("GET")
-	// quotesGroup.Handle("/", getQuoteHandler(service)).Methods("GET")
 	quotesGroup.Handle("/{id}", deleteQuoteHandler(service)).Methods("DELETE")
 }
 
@@ -47,13 +46,14 @@ func postQuoteHandler(service quoteService.Service) http.HandlerFunc {
 	}
 }
 
-func getAllQuotesHandler(service quoteService.Service) http.HandlerFunc {
+func getQuotesHandler(service quoteService.Service) http.HandlerFunc {
 	type response struct {
 		Quotes []quoteReadDTO `json:"quotes"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		authorFilter := r.URL.Query().Get("author")
 
-		quotes, err := service.GetQuotes(r.Context())
+		quotes, err := service.GetQuotesWithFilter(r.Context(), authorFilter)
 		if err != nil {
 			http.Error(w, "service: get quotes", http.StatusInternalServerError)
 			return
@@ -92,37 +92,6 @@ func getRandomQuoteHandler(service quoteService.Service) http.HandlerFunc {
 			http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		}
 
-		return
-	}
-}
-
-func getQuoteHandler(service quoteService.Service) http.HandlerFunc {
-	type response = quoteReadDTO
-	return func(w http.ResponseWriter, r *http.Request) {
-		author := r.URL.Query().Get("author")
-
-		if len(author) == 0 {
-			http.Error(w, "author query parameter is empty", http.StatusBadRequest)
-		}
-
-		quote, err := service.GetQuoteByAuthor(r.Context(), author)
-		if err != nil {
-			if errors.Is(err, quoteService.ErrNotFound) {
-				w.WriteHeader(http.StatusNotFound)
-				return
-			}
-			http.Error(w, "service: get quote by author", http.StatusInternalServerError)
-		}
-
-		var resp response
-		resp = quoteFromDomainToReadDTO(quote)
-
-		err = json.NewEncoder(w).Encode(resp)
-		if err != nil {
-			http.Error(w, "failed to encode response", http.StatusInternalServerError)
-		}
-
-		w.WriteHeader(http.StatusOK)
 		return
 	}
 }
