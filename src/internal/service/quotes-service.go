@@ -83,6 +83,9 @@ func (s *Service) GetRandomQuote(ctx context.Context) (*Quote, error) {
 func (s *Service) GetQuoteByAuthor(ctx context.Context, author string) (*Quote, error) {
 	quote, err := s.QuoteRepository.GetQuoteByAuthor(ctx, author)
 	if err != nil {
+		if errors.Is(err, ErrNotFound) {
+			return nil, ErrNotFound
+		}
 		return nil, fmt.Errorf("quote repository: get quote by author: %w", err)
 	}
 
