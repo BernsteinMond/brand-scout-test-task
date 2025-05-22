@@ -78,8 +78,16 @@ func (q *QuoteRepository) GetQuotesWithFilter(ctx context.Context, authorFilter 
 }
 
 func (q *QuoteRepository) GetRandomQuote(ctx context.Context) (*service.Quote, error) {
-	//TODO implement me
-	panic("implement me")
+	const query = `SELECT id, author, quote FROM quote.quotes ORDER BY random() LIMIT 1`
+
+	var ret service.Quote
+
+	err := q.db.QueryRowContext(ctx, query).Scan(&ret.ID, &ret.Author, &ret.Quote)
+	if err != nil {
+		return nil, fmt.Errorf("run sql query: %w", err)
+	}
+
+	return &ret, nil
 }
 
 func (q *QuoteRepository) GetQuoteByAuthor(ctx context.Context, author string) (*service.Quote, error) {
