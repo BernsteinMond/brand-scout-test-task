@@ -19,7 +19,7 @@ type DB struct {
 	Port     int    `env:"PORT,notEmpty"`
 	User     string `env:"USER,notEmpty"`
 	Password string `env:"PASSWORD,notEmpty"`
-	Database string `env:"DATABASE,notEmpty"`
+	Name     string `env:"NAME,notEmpty"`
 	SSLMode  string `env:"SSL_MODE,notEmpty"`
 }
 

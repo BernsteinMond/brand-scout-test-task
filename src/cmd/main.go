@@ -79,7 +79,7 @@ func newSQLDB(cfg DB) (*sql.DB, error) {
 		Port:     cfg.Port,
 		User:     cfg.User,
 		Password: cfg.Password,
-		Database: cfg.Database,
+		Database: cfg.Name,
 		SSLMode:  cfg.SSLMode,
 	}
 

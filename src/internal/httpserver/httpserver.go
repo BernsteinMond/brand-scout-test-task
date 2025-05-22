@@ -9,7 +9,7 @@ func New(service QuoteService, listenAddr string) *http.Server {
 	router := mux.NewRouter()
 
 	server := &http.Server{
-		Addr:    listenAddr,
+		Addr:    ":" + listenAddr,
 		Handler: router,
 	}
 
