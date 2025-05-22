@@ -53,6 +53,12 @@ func run() (err error) {
 		slog.Info("Database connection closed")
 	}()
 
+	select {
+	case <-ctx.Done():
+		return nil
+	default:
+	}
+
 	quoteRepo := impl.NewQuoteRepository(db)
 	quoteService := service.New(quoteRepo)
 
