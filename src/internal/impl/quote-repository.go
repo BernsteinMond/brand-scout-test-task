@@ -9,6 +9,8 @@ import (
 	"github.com/google/uuid"
 )
 
+// The data layer of the project can be covered with tests using the go testcontainers library.
+
 type QuoteRepository struct {
 	db *sql.DB
 }

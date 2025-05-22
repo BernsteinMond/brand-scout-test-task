@@ -11,6 +11,19 @@ import (
 )
 
 func mapHandlers(router *mux.Router, service QuoteService) {
+	// The current endpoint structure follows the technical requirements, but in production
+	// systems it's strongly recommended to implement API versioning from the start.
+	//
+	// Good versioning practice example:
+	//   /api/v1/quotes
+	//   /api/v1/quotes/{id}
+	//
+	// Key benefits of versioning:
+	// 1. Backward compatibility - old clients continue working when API evolves
+	// 2. Clear migration path - clients can upgrade to new versions gradually
+	//
+	// Current implementation processes all requests directly, but adding caching
+	// (using Redis, Memcached or in-memory cache) could significantly improve performance.
 	quotesGroup := router.PathPrefix("/quotes").Subrouter()
 	quotesGroup.Handle("", PostQuoteHandler(service)).Methods("POST")
 	quotesGroup.Handle("", GetQuotesHandler(service)).Methods("GET")
