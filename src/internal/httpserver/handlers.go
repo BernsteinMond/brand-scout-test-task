@@ -35,8 +35,11 @@ func postQuoteHandler(service QuoteService) http.HandlerFunc {
 			return
 		}
 
-		if len(req.Quote) == 0 || len(req.Author) == 0 {
-			http.Error(w, "empty \"quote\" or \"author\" parameter", http.StatusBadRequest)
+		if len(req.Quote) == 0 {
+			http.Error(w, "\"quote\" request field can not be empty", http.StatusBadRequest)
+		}
+		if len(req.Author) == 0 {
+			http.Error(w, "\"author\" request field can not be empty", http.StatusBadRequest)
 		}
 
 		err = service.CreateNewQuote(r.Context(), req.Author, req.Quote)
