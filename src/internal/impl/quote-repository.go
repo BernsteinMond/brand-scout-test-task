@@ -91,21 +91,3 @@ func (q *QuoteRepository) GetRandomQuote(ctx context.Context) (*service.Quote, e
 
 	return &ret, nil
 }
-
-func (q *QuoteRepository) GetQuoteByAuthor(ctx context.Context, author string) (*service.Quote, error) {
-	const query = `SELECT id,quote FROM quote.quotes WHERE author = $1`
-
-	ret := service.Quote{
-		Author: author,
-	}
-
-	err := q.db.QueryRowContext(ctx, query, author).Scan(&ret.ID, &ret.Quote)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, service.ErrRepoNotFound
-		}
-		return nil, fmt.Errorf("run sql query: %w", err)
-	}
-
-	return &ret, nil
-}
