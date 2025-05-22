@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var quotesArrayFixture = []service.Quote{
+var QuotesArrayFixture = []service.Quote{
 	{
 		ID:     uuid.MustParse("d45cd206-6495-414c-ab1d-f0b6468264be"),
 		Author: "author-1",

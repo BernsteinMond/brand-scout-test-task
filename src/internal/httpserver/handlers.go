@@ -100,6 +100,7 @@ func GetRandomQuoteHandler(service QuoteService) http.HandlerFunc {
 			http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		}
 
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 }

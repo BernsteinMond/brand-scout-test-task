@@ -8,30 +8,30 @@ import (
 )
 
 type MockQuoteService struct {
-	retError error
+	RetError error
 }
 
 var _ httpserver.QuoteService = (*MockQuoteService)(nil)
 
 func (m *MockQuoteService) CreateNewQuote(context.Context, string, string) error {
-	return m.retError
+	return m.RetError
 }
 
 func (m *MockQuoteService) GetQuotesWithFilter(context.Context, string) ([]service.Quote, error) {
-	if m.retError != nil {
-		return nil, m.retError
+	if m.RetError != nil {
+		return nil, m.RetError
 	}
-	return quotesArrayFixture, nil
+	return QuotesArrayFixture, nil
 }
 
 func (m *MockQuoteService) GetRandomQuote(context.Context) (*service.Quote, error) {
-	if m.retError != nil {
-		return nil, m.retError
+	if m.RetError != nil {
+		return nil, m.RetError
 	}
 
-	return &quotesArrayFixture[0], nil
+	return &QuotesArrayFixture[0], nil
 }
 
 func (m *MockQuoteService) DeleteQuoteByID(ctx context.Context, id uuid.UUID) error {
-	return m.retError
+	return m.RetError
 }
