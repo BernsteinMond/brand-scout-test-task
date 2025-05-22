@@ -8,10 +8,8 @@ import (
 )
 
 var (
-	ErrNotFound      = errors.New("not found")
 	ErrAlreadyExists = errors.New("already exists")
 
-	ErrRepoNotFound      = errors.New("repository: not found")
 	ErrRepoAlreadyExists = errors.New("repository: already exists")
 )
 
@@ -21,8 +19,6 @@ type QuoteRepository interface {
 	DeleteQuoteByID(ctx context.Context, id uuid.UUID) error
 	GetQuotesWithFilter(ctx context.Context, authorFilter string) ([]Quote, error)
 	GetRandomQuote(ctx context.Context) (*Quote, error)
-	// GetQuoteByAuthor must return ErrNotFound if no quote was found.
-	GetQuoteByAuthor(ctx context.Context, author string) (*Quote, error)
 }
 
 type Service struct {
@@ -75,18 +71,6 @@ func (s *Service) GetRandomQuote(ctx context.Context) (*Quote, error) {
 	quote, err := s.QuoteRepository.GetRandomQuote(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("quote repository: get random quote: %w", err)
-	}
-
-	return quote, nil
-}
-
-func (s *Service) GetQuoteByAuthor(ctx context.Context, author string) (*Quote, error) {
-	quote, err := s.QuoteRepository.GetQuoteByAuthor(ctx, author)
-	if err != nil {
-		if errors.Is(err, ErrNotFound) {
-			return nil, ErrNotFound
-		}
-		return nil, fmt.Errorf("quote repository: get quote by author: %w", err)
 	}
 
 	return quote, nil
